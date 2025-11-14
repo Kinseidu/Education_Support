@@ -2,12 +2,15 @@ import { NextFunction, Request, Response } from "express";
 import { NewsletterSubscriber } from "../models/NewsletterSubscriber";
 import { validateNewsletterInput } from "../validators/newsletter.validator";
 import { sendSuccess } from "../utils/apiResponse";
+import { sendEmail } from "../utils/sendEmail"; 
 
 export const subscribeNewsletter = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const input = validateNewsletterInput(req.body);
 
     let subscriber = await NewsletterSubscriber.findOne({ email: input.email });
+
+    const isNewSubscriber = !subscriber || !subscriber.active;
 
     if (subscriber) {
       if (!subscriber.active) {
@@ -18,20 +21,33 @@ export const subscribeNewsletter = async (req: Request, res: Response, next: Nex
       }
     } else {
       subscriber = await NewsletterSubscriber.create({
-        email: input.email
+        email: input.email,
+      });
+    }
+
+    // -----------------------------------------
+    // 🚀 Send automatic welcome email
+    // Only send if this is a NEW subscription
+    // -----------------------------------------
+    if (isNewSubscriber) {
+      await sendEmail({
+        to: subscriber.email,
+        subject: "Welcome to our Newsletter!",
+        html: `
+          <h2>Thanks for subscribing! 🎉</h2>
+          <p>We're excited to have you on board.</p>
+          <p>You’ll now receive updates and exclusive content.</p>
+        `,
       });
     }
 
     return sendSuccess(
       res,
-      {
-        id: subscriber.id,
-        email: subscriber.email
-      },
+      { id: subscriber.id, email: subscriber.email },
       "Subscription successful."
     );
+
   } catch (error) {
     return next(error);
   }
 };
-
