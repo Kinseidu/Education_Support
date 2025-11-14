@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Adomako EduSupport Foundation badge">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#16a34a" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#gradient)" />
+  <path
+    fill="#ffffff"
+    d="M32 15c9.39 0 17 7.61 17 17s-7.61 17-17 17-17-7.61-17-17S22.61 15 32 15zm0 6.5c-5.79 0-10.5 4.71-10.5 10.5S26.21 42.5 32 42.5 42.5 37.79 42.5 32 37.79 21.5 32 21.5zm0 6.75a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5z"
+  />
+</svg>
+
