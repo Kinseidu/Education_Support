@@ -4,6 +4,7 @@ export interface ProgramDocument extends Document {
   title: string;
   description: string;
   location?: string;
+  coverImageUrl?: string;
   status: "upcoming" | "active" | "completed";
   startDate?: Date;
   endDate?: Date;
@@ -24,6 +25,10 @@ const ProgramSchema = new Schema<ProgramDocument>(
       trim: true
     },
     location: {
+      type: String,
+      trim: true
+    },
+    coverImageUrl: {
       type: String,
       trim: true
     },

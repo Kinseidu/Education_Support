@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, Phone, MapPin, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { api } from "@/lib/api";
 import { ApiError } from "@/lib/apiClient";
+import DonationContactDialog from "@/components/DonationContactDialog";
 
 // Security: Input validation schema
 const contactSchema = z.object({
@@ -43,6 +44,16 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactInfo, setContactInfo] = useState<{
+    founderPhone?: string;
+    whatsappNumber?: string;
+    founderEmail?: string;
+    bankName?: string;
+    accountName?: string;
+    accountNumber?: string;
+  } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"donation" | "partnership" | "volunteer">("donation");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +102,20 @@ export default function Contact() {
       [e.target.name]: e.target.value
     });
   };
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const resp = await api.contactInfo.get();
+        if (mounted) setContactInfo(resp.data);
+      } catch (err) {
+        // silently ignore, contact info is optional
+        console.error("Unable to fetch contact info", err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -286,7 +311,7 @@ export default function Contact() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-3">
-              <Card className="text-center border-2">
+                <Card className="text-center border-2">
                 <CardHeader>
                   <CardTitle className="text-xl">Make a Donation</CardTitle>
                   <CardDescription>
@@ -294,11 +319,15 @@ export default function Contact() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full">Donate Now</Button>
+                  <div className="space-y-3">
+                      <Button className="w-full" onClick={() => { setDialogMode("donation"); setDialogOpen(true); }}>
+                        Donate Now
+                      </Button>
+                  </div>
                 </CardContent>
               </Card>
 
-              <Card className="text-center border-2">
+                <Card className="text-center border-2">
                 <CardHeader>
                   <CardTitle className="text-xl">Volunteer</CardTitle>
                   <CardDescription>
@@ -306,13 +335,13 @@ export default function Contact() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={() => { setDialogMode("volunteer"); setDialogOpen(true); }}>
                     Join Our Team
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="text-center border-2">
+                <Card className="text-center border-2">
                 <CardHeader>
                   <CardTitle className="text-xl">Partner With Us</CardTitle>
                   <CardDescription>
@@ -320,7 +349,7 @@ export default function Contact() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full" onClick={() => { setDialogMode("partnership"); setDialogOpen(true); }}>
                     Learn More
                   </Button>
                 </CardContent>
@@ -328,9 +357,19 @@ export default function Contact() {
             </div>
           </div>
         </section>
+          
+          {/* Donation / Partnership / Volunteer Modal */}
+          <>
+            {/* lazy load the dialog component to keep bundle small if desired */}
+            {typeof window !== "undefined" && (
+              // import at top would also work; using dynamic here is okay but static import kept for simplicity
+              <></>
+            )}
+          </>
       </main>
 
       <Footer />
+      <DonationContactDialog open={dialogOpen} onOpenChange={setDialogOpen} mode={dialogMode} />
     </div>
   );
 }

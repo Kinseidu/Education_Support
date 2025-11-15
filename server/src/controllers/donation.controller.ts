@@ -1,28 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { sendSuccess } from "../utils/apiResponse";
-import {
-  validateDonationInitiateInput,
-  validateDonationVerifyInput
-} from "../validators/donation.validator";
-import { initiateDonation, verifyDonation } from "../services/donation.service";
+import { AppError } from "../utils/appError";
 
-export const initiateDonationHandler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const input = validateDonationInitiateInput(req.body);
-    const result = await initiateDonation(input);
-    return sendSuccess(res, result, "Donation initialized successfully.", 201);
-  } catch (error) {
-    return next(error);
-  }
+// Donations/payment processing has been removed. Endpoints retained
+// for compatibility but will return 410 Gone directing clients to contact-info.
+
+export const initiateDonationHandler = async (_req: Request, _res: Response, next: NextFunction) => {
+  return next(new AppError("Donations have been disabled. Please use the contact-info endpoint.", 410));
 };
 
-export const verifyDonationHandler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const input = validateDonationVerifyInput(req.body);
-    const result = await verifyDonation(input);
-    return sendSuccess(res, result, "Donation verification completed.");
-  } catch (error) {
-    return next(error);
-  }
+export const verifyDonationHandler = async (_req: Request, _res: Response, next: NextFunction) => {
+  return next(new AppError("Donations have been disabled. Please use the contact-info endpoint.", 410));
 };
 

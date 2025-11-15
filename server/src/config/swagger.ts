@@ -38,26 +38,7 @@ const swaggerDefinition = {
           message: { type: "string" }
         }
       },
-      DonationInitiateInput: {
-        type: "object",
-        required: ["amount", "currency", "email"],
-        properties: {
-          amount: { type: "number", example: 150 },
-          currency: { type: "string", example: "GHS" },
-          email: { type: "string", format: "email" },
-          fullName: { type: "string" },
-          provider: { type: "string", enum: ["paystack", "stripe"] },
-          callbackUrl: { type: "string", format: "uri" }
-        }
-      },
-      DonationVerifyInput: {
-        type: "object",
-        required: ["reference"],
-        properties: {
-          reference: { type: "string" },
-          provider: { type: "string", enum: ["paystack", "stripe"] }
-        }
-      },
+      // Donation/payment schemas removed
       NewsletterInput: {
         type: "object",
         required: ["email"],
@@ -112,6 +93,7 @@ const swaggerDefinition = {
         }
       }
     },
+    
     "/api/contact": {
       post: {
         tags: ["Contact"],
@@ -127,41 +109,6 @@ const swaggerDefinition = {
         responses: {
           201: { description: "Contact submission created" },
           422: { description: "Validation failed" }
-        }
-      }
-    },
-    "/api/donations/initiate": {
-      post: {
-        tags: ["Donations"],
-        summary: "Initiate donation",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: { $ref: "#/components/schemas/DonationInitiateInput" }
-            }
-          }
-        },
-        responses: {
-          201: { description: "Donation initialized" },
-          400: { description: "Invalid payload" }
-        }
-      }
-    },
-    "/api/donations/verify": {
-      post: {
-        tags: ["Donations"],
-        summary: "Verify donation",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: { $ref: "#/components/schemas/DonationVerifyInput" }
-            }
-          }
-        },
-        responses: {
-          200: { description: "Verification result" }
         }
       }
     },

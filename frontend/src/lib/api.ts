@@ -40,6 +40,7 @@ export interface ProgramItem {
   title: string;
   description: string;
   location?: string;
+  coverImageUrl?: string;
   status: "upcoming" | "active" | "completed";
   startDate?: string;
   endDate?: string;
@@ -75,11 +76,15 @@ export const api = {
         `/api/programs${status ? `?status=${encodeURIComponent(status)}` : ""}`,
       ),
   },
-  donations: {
-    initiate: (payload: Record<string, unknown>) =>
-      apiClient.post("/api/donations/initiate", payload),
-    verify: (payload: Record<string, unknown>) =>
-      apiClient.post("/api/donations/verify", payload),
+  contactInfo: {
+    get: () => apiClient.get<{
+      founderPhone: string;
+      whatsappNumber: string;
+      founderEmail: string;
+      bankName: string;
+      accountName: string;
+      accountNumber: string;
+    }>("/api/contact-info"),
   },
 };
 
